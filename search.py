@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -87,17 +89,42 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
+    from util import Stack
+    from game import Directions
+    # 候选节点
+    Open = Stack()
+    # 已经走过的节点
+    Closed = []
+    # 将起始节点加入到栈中
+    Open.push((problem.getStartState(), []))
+    # 如果栈不为空就一直搜索
+    while not Open.isEmpty():
+        # 得到当前的节点
+        node0, node1 = Open.pop()
+        # 如果当前节点时目标节点，就结束搜索返回结果
+        if problem.isGoalState(node0):
+            return node1
+        #如果当前节点不在closed表中，就
+        if node0 not in Closed:
+            expand = problem.getSuccessors(node0)
+            Closed.append(node0)
+            for location, direction, cost in expand:
+                if (location not in Closed):
+                    Open.push((location, node1 + [direction]))
     util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -105,6 +132,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
