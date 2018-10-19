@@ -92,27 +92,26 @@ def depthFirstSearch(problem):
     from util import Stack
     from game import Directions
     # 候选节点
-    Open = Stack()
+    opened = Stack()
     # 已经走过的节点
-    Closed = []
+    closed = []
     # 将起始节点加入到栈中
-    Open.push((problem.getStartState(), []))
+    opened.push((problem.getStartState(), []))
     # 如果栈不为空就一直搜索
-    while not Open.isEmpty():
+    while not opened.isEmpty():
         # 得到当前的节点
-        node0, node1 = Open.pop()
+        node0, node1 = opened.pop()
         # 如果当前节点时目标节点，就结束搜索返回结果
         if problem.isGoalState(node0):
             return node1
-        #如果当前节点不在closed表中，就
-        if node0 not in Closed:
+        # 如果当前节点不在closed表中，就将它加入进去
+        if node0 not in closed:
             expand = problem.getSuccessors(node0)
-            Closed.append(node0)
+            closed.append(node0)
             for location, direction, cost in expand:
-                if (location not in Closed):
-                    Open.push((location, node1 + [direction]))
+                if (location not in closed):
+                    opened.push((location, node1 + [direction]))
     util.raiseNotDefined()
-
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
