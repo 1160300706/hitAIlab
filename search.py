@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -90,25 +91,59 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     from util import Stack
+    # 起始节点栈
     opened = Stack()
+    # 已经访问过的节点表
     closed = []
+    # 得到初始节点
     opened.push((problem.getStartState(), []))
+    # 开始遍历
     while not opened.isEmpty():
-        node0, node1 = opened.pop()
-        if problem.isGoalState(node0):
-            return node1
-        if node0 not in closed:
-            expand = problem.getSuccessors(node0)
-            closed.append(node0)
+        # 得到当前的节点
+        currentNode0, currentNode1 = opened.pop()
+        # 判断是否是目标节点
+        if problem.isGoalState(currentNode0):
+            return currentNode1
+        # 如果当前节点没有被访问过
+        if currentNode0 not in closed:
+            # 得到后继节点和运行方向以及花费代价
+            expand = problem.getSuccessors(currentNode0)
+            # 将当前节点加入到closed表中
+            closed.append(currentNode0)
+            # 遍历后继节点
             for locations, directions, cost in expand:
                 if (locations not in closed):
-                    opened.push((locations, node1 + [directions]))
+                    opened.push((locations, currentNode1 + [directions]))
     util.raiseNotDefined()
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    from util import Queue
+    # 起始节点队列
+    opened = Queue()
+    # 已经访问过的节点表
+    closed = []
+    # 得到初始节点
+    opened.push((problem.getStartState(), []))
+    # 开始遍历
+    while not opened.isEmpty():
+        # 得到当前节点
+        currentNode0, currentNode1 = opened.pop()
+        # 判断是否是目标节点
+        if problem.isGoalState(currentNode0):
+            return currentNode1
+        # 如果当前节点没有访问过
+        if currentNode0 not in closed:
+            # 得到后继节点和运行方向以及花费代价
+            expand = problem.getSuccessors(currentNode0)
+            # 将当前节点加入closed表中
+            closed.append(currentNode0)
+            # 遍历后继节点
+            for locations, directions, cost in expand:
+                if (locations not in closed):
+                    opened.push((locations, currentNode1 + [directions]))
     util.raiseNotDefined()
 
 
