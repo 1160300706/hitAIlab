@@ -150,6 +150,52 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    # 起始结点
+    startNodes = problem.getStartState()
+    # 记录下当前队列
+    queue = util.PriorityQueueWithFunction(lambda x: x[2])
+    # 将起始节点加入队列
+    queue.push((startNodes, None, 0))
+    # 初始化代价为0
+    cost = 0
+    # 标记是否记录
+    visited = []
+    # 记录路径
+    path = []
+    # 创建字典
+    parentSeq = {}
+    parentSeq[(startNodes, None, 0)] = None
+    while not queue.isEmpty():
+        # 得到当前的节点信息
+        currentNodes = queue.pop()
+        # 判断是否是目标节点
+        if (problem.isGoalState(currentNodes[0])):
+            break
+        else:
+            # 得到当前节点信息
+            currentState = currentNodes[0]
+            # 将该节点加入到visited中
+            if currentState not in visited:
+                visited.append(currentState)
+            else:
+                continue
+            # 得到表的后继
+            successors = problem.getSuccessors(currentState)
+            # 遍历后继节点
+            for s in successors:
+                cost = currentNodes[2] + s[2];
+                if s[0] not in visited:
+                    queue.push((s[0], s[1], cost))
+                    parentSeq[(s[0], s[1])] = currentNodes
+    child = currentNodes
+    while child != None:
+        path.append(child[1])
+        if child[0] != startNodes:
+            child = parentSeq[(child[0], child[1])]
+        else:
+            child = None
+    path.reverse()
+    return path[1:]
     util.raiseNotDefined()
 
 
