@@ -206,12 +206,56 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-
+#郑昊宣
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    
+    
+    
+    from game import Directions
+    
+    
+    closed = {}
+    fringe = []
+    
+    fringe.append((problem.getStartState(), None, None, problem.getCostOfActions([]) + heuristic(problem.getStartState(), problem)))
+    #open list: state, fatherState, the action from father to this state, the action 's cost;
+    
+    while len(fringe) > 0:
+        fringe = sorted(fringe, key = lambda item: item[3]) #sort
+        #get the lowest cost element:
+        currentState, curStatefather, curAction, currentCost = fringe.pop(0)
+        
+        
+        if currentState not in closed: # 'in' is illegal ?
+            closed[currentState] = (curStatefather, curAction)
+            #after put the new state in the closed list, we can see weather the goal is found...
+            if problem.isGoalState(currentState):
+                #finfish find the path from closed list...
+                result = []
+                while not (closed[currentState][0] == None):
+                    result.append(closed[currentState][1]) #add action objects...
+                    currentState = closed[currentState][0] #point to its father node...
+                #what is WRONG with reserve() !?????
+                result2 = []
+                for i in range(len(result)):
+                    result2.append(result[len(result) - 1 - i])
+                return result2
+        
+            for newState, newAction, newCost in problem.getSuccessors(currentState):
+                if newState not in closed:
+                    find = False
+                    for item in fringe:
+                        if (newState in item) and (item[3] > currentCost + newCost + heuristic(newState, problem)):
+                            item = (newState, currentState,newAction, currentCost + newCost + heuristic(newState, problem))#change the fa reference
+                            find = True
+                    if (not find) and (newState not in fringe):
+                        fringe.append((newState, currentState, newAction, currentCost + newCost + heuristic(newState, problem)))
 
+
+util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
