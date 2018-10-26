@@ -1,3 +1,4 @@
+#coding=UTF-8
 # searchAgents.py
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -299,19 +300,27 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
     
+    
     def getStartState(self):
         """
             Returns the start state (in your state space, not the full Pacman state
             space)
             """
         "*** YOUR CODE HERE ***"
+        return (self.startingPosition, [])  #返回初始位置，以及所经过的角落位置
         util.raiseNotDefined()
     
     def isGoalState(self, state):
         """
             Returns whether this search state is a goal state of the problem.
             """
+        #如果当前位置是角落，并且不在已经经过的表中，将其加入，判断是否是否已经经过四个角落
         "*** YOUR CODE HERE ***"
+        pos=state[0]
+        Visted_Corners=state[1]
+        
+        return len(Visted_Corners)==4
+        
         util.raiseNotDefined()
     
     def getSuccessors(self, state):
@@ -324,7 +333,8 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
             """
-        
+        x,y=state[0]
+        vis_corner=state[1]
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -335,7 +345,18 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
             
             "*** YOUR CODE HERE ***"
-        
+            dx, dy = Actions.directionToVector(action) #下一步的行动方向
+            nextx, nexty = int(x + dx), int(y + dy)
+            next_node = (nextx, nexty)  #下一个点坐标
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:   #如果前方不是墙，则可以移动，否则跳过
+                list_vis_corner = list(vis_corner)
+                if next_node in self.corners:    #如果下一个节点是角落但未经过，将他加入，返回后继节点
+                    if next_node not in list_vis_corner:
+                        list_vis_corner.append( next_node )
+                successor = ((next_node, list_vis_corner), action, 1)
+                successors.append(successor)
+
         self._expanded += 1 # DO NOT CHANGE
         return successors
     
@@ -370,7 +391,22 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    node = state[0]
+    un_viscorner = [item for item in corners if item not in state[1]]
+    hn = minmanhattan(un_viscorner, state[0])#计算所有未经过的角落的到现在距离的最小曼哈顿值，一定比实际距离小
+    
+    return hn
+def minmanhatten(corners,pos):
+    #遍历所有corner的豆子，选择最小的曼哈顿距离作为启发函数
+    if len(corners) == 0:
+        return 0
+    
+    hn = []
+    for loc in corners:
+        dis = abs(loc[0] - pos[0]) + abs(loc[1] - pos[1])+ minmanhattan([c for c in corners if c != loc], loc)
+        hn.append(dis)
+    
+    return min(hn)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

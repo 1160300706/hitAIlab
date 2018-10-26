@@ -255,7 +255,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                         fringe.append((newState, currentState, newAction, currentCost + newCost + heuristic(newState, problem)))
 
 
-util.raiseNotDefined()
+#util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
