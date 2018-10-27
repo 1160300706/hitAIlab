@@ -372,41 +372,52 @@ class CornersProblem(search.SearchProblem):
             x, y = int(x + dx), int(y + dy)
             if self.walls[x][y]: return 999999
         return len(actions)
-
+    
+def man_distance(pos, corners):
+    #calculate min distance
+    if len(corners) == 0:
+        return 0
+ 
+    corner = []
+    
+    for thiscorner in corners:
+        dis = abs(thiscorner[0] - pos[0]) + abs(thiscorner[1] - pos[1])
+        corner1 = []
+        for cor in corners:
+            if cor != thiscorner:
+                corner1.append(cor)
+        dis1 = man_distance(thiscorner, corner1)
+        dis = dis + dis1
+        corner.append(dis)
+ 
+    return min(corner)
 
 def cornersHeuristic(state, problem):
     """
-        A heuristic for the CornersProblem that you defined.
-        
-        state:   The current search state
-        (a data structure you chose in your search problem)
-        
-        problem: The CornersProblem instance for this layout.
-        
-        This function should always return a number that is a lower bound on the
-        shortest path from the state to a goal of the problem; i.e.  it should be
-        admissible (as well as consistent).
-        """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-    
+    A heuristic for the CornersProblem that you defined.
+
+      state:   The current search state
+               (a data structure you chose in your search problem)
+
+      problem: The CornersProblem instance for this layout.
+
+    This function should always return a number that is a lower bound on the
+    shortest path from the state to a goal of the problem; i.e.  it should be
+    admissible (as well as consistent).
+    """
+    corners = problem.corners  # These are the corner coordinates
+    walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+
     "*** YOUR CODE HERE ***"
-    node = state[0]
-    un_viscorner = [item for item in corners if item not in state[1]]
-    hn = minmanhattan(un_viscorner, state[0])#计算所有未经过的角落的到现在距离的最小曼哈顿值，一定比实际距离小
+    notviscorner = []
+    for cor in corners:
+        if cor not in state[1]:
+            notviscorner.append(cor)#add not visit corner
     
-    return hn
-def minmanhatten(corners,pos):
-    #遍历所有corner的豆子，选择最小的曼哈顿距离作为启发函数
-    if len(corners) == 0:
-        return 0
-    
-    hn = []
-    for loc in corners:
-        dis = abs(loc[0] - pos[0]) + abs(loc[1] - pos[1])+ minmanhattan([c for c in corners if c != loc], loc)
-        hn.append(dis)
-    
-    return min(hn)
+    mind = man_distance(state[0], notviscorner)#calculate the distance of not visit corner
+ 
+    return mind
+    "*** YOUR CODE HERE ***"
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
